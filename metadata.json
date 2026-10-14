@@ -1,0 +1,8 @@
+{
+  "name": "CYD-Klipper Touch Display & Freenove ESP32-S3",
+  "description": "Interactive CYD-Klipper 3D printer touch display for Klipper, Bambu Lab, and OctoPrint with Freenove ESP32-S3 2.8\" IPS compilation & flasher support.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ],
+  "permissions": []
+}

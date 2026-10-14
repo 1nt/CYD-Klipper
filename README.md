@@ -1,76 +1,64 @@
-![GitHub release (with filter)](https://img.shields.io/github/v/release/suchmememanyskill/CYD-Klipper)
-[![Donations](https://img.shields.io/badge/Support%20on-Ko--Fi-red)](https://ko-fi.com/suchmememanyskill)
+# CYD-Klipper Touch Display & Freenove ESP32-S3
 
-# CYD-Klipper
-An implementation of a wireless Klipper, Bambu and Octoprint status display on an ESP32 + screen. Uses Moonraker to fetch data.
+An interactive React application rewrite of **CYD-Klipper**, providing a full simulation and control interface for 3D printers running **Klipper (Moonraker)**, **Bambu Lab**, and **OctoPrint**, with dedicated support for the **Freenove ESP32-S3 Touch Display 2.8" IPS (Dual-core 240 MHz)**.
 
-A simple and cheap solution to use a dedicated screen with Klipper, a 3d printing Firmware.
-Also now with Bambu Lab and Octoprint printers!
+![Showcase](readme/PXL_20231113_171629383.jpg)
 
-![showcase_image](readme/PXL_20231113_171629383.jpg)
+## Features
 
-### Required hardware
+- **Interactive 320×240 LVGL Touch Display Emulation**:
+  - **Progress Panel**: Live print progress bar, elapsed & remaining time estimations (slicer, interpolated, percentage modes), layer tracker, speed/flow/fan pills, pause/resume/cancel controls, and emergency stop (M112).
+  - **Temperature & Extrude Panel**: Hotend and heated bed telemetry with heating PID curves, 3 hotend presets, 3 bed presets, custom temp keypad, cooldown button, and cold extrusion prevention (locked below 175°C).
+  - **Move & Jogging Panel**: Absolute and relative toolhead movement (X, Y, Z), customizable step increments (0.1, 1, 10, 50mm), single-axis and all-axes homing (G28), and stepper motor shutoff (M84).
+  - **Quick Tuning Matrices**: Live popups for Part Fan Speed, Z-Offset live babystepping (-0.2mm to +0.2mm), Speed Multiplier (50% to 200%), and Flow/Extrusion rate.
+  - **G-Code Files Panel**: File listing with size, duration estimates, 32×32 / 64×64 thumbnail previews, and print confirmation modal.
+  - **Macros & Moonraker Power Panel**: Execute Klipper macros (`CYD_SCREEN_MACRO`) and toggle network power relays.
+  - **Multi-Printer Switcher**: Instant hub switching between up to 6 configured Klipper, Bambu Lab, and OctoPrint printers.
+  - **Settings**: Color schemes (Voron Red, Prusa Orange, Bambu Green, Cyan, Violet), display color inversion (essential for ST7789 IPS panels), brightness adjustment, screen wake timeout, and calibration reset.
+- **Freenove ESP32-S3 2.8" IPS Support & AI LVGL Tutorial**:
+  - Full board specifications (Xtensa LX7 Dual-Core 240 MHz, 8MB Octal PSRAM, 16MB Flash).
+  - Verified GPIO pinout mapping for ST7789V2 SPI display and FT6336U capacitive touch.
+  - Ready-to-use `platformio.ini` environment snippet (`[env:freenove-esp32-s3-28]`) and board JSON (`esp32-s3-freenove-28c.json`).
+  - Architectural tutorial covering dual-core FreeRTOS task separation, PSRAM double-buffering, and vector neural acceleration.
+- **Web Serial Terminal**:
+  - 115200 baud USB serial console connecting directly to physical ESP32 boards via Web Serial API or running the simulated firmware command shell (`help`, `status`, `ssid`, `ip`, `port`, `key`, `gcode`, `restart`).
+- **Live Moonraker Connection**:
+  - Test and link real Klipper/Moonraker network instances directly to the display.
 
-A ESP32-2432S028R is required to run this project. You can find out where to buy these on the ["ESP32 Cheap Yellow Display"](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display#where-to-buy) repository.
+## Building and Running
 
-### Features
-- View printer status
-- View print progress and print statistics
-- Start a print
-- (When the printer is idle) move the printer
-- (During a print) set fan speed, flow rate, speed and z offset
-- Manage temperature
-- Extrude/Retract filament
-- Execute predefined gcode macros
-- Toggle Moonraker power devices
-- OTA updates
-- Serial console over USB (115200 8n1, echo off, LF/LF)
-- Control Klipper, Octoprint and Bambu printers.
-- Wired Serial/Usb Klipper connection
+### Web Application
+```bash
+npm install
+npm run dev
+```
 
-### Install
+### Compiling Firmware for Freenove ESP32-S3 2.8"
+```bash
+# 1. Install PlatformIO CLI
+pip install platformio
 
-[There is a web-based installer available. This is only supported on Chrome, Edge, Arc or Opera, and only on Desktop.](https://suchmememanyskill.github.io/CYD-Klipper/)
+# 2. Build for Freenove ESP32-S3
+pio run -e freenove-esp32-s3-28
 
-On initial install, all data should be wiped. On updates, data should be able to be kept without issues.
+# 3. Flash to board via USB-C (CH343 port)
+pio run -e freenove-esp32-s3-28 -t upload
 
-When there is an update available, a button in the settings will appear that can be pressed to update. If automatic updates are preferred, there is a toggle in the settings to automatically update. This will right after connecting to wifi update the screen.
+# 4. Monitor serial logs
+pio device monitor -b 115200
+```
 
-### Donate
+## Hardware Specifications (Freenove ESP32-S3 2.8")
 
-If you found this project helpful, please consider a donation [to my Ko-Fi](https://ko-fi.com/suchmememanyskill). It would help out a lot in the development of this project, due to the need to buy the screens. 
+| Component | Specification |
+|---|---|
+| **MCU** | ESP32-S3-WROOM-1 (Xtensa Dual-Core 240 MHz with AI Vector Extension) |
+| **RAM / Flash** | 8MB Octal PSRAM + 16MB Flash |
+| **Display** | 2.8-inch IPS LCD (320×240), ST7789V2 SPI |
+| **Touchscreen** | Capacitive Multi-touch, FT6336U I2C |
+| **Connectivity** | 2.4 GHz Wi-Fi 4 (802.11 b/g/n) + Bluetooth 5 (LE) |
+| **Ports** | Dual Type-C USB (CH343 UART + Native USB OTG) |
 
-Thank you!
+## License
 
-### Where to buy hardware
-All links below are affiliate links. Please also check yourself if there is a cheaper version available than the ones below. I have only linked ones that i have personally bought.
-
-*ESP32-2432S028R (2.8" Resistive, Cheapest)*
-- [USB C + microB version](https://s.click.aliexpress.com/e/_omjsYBJ)
-- [Another USB C + microB version](https://s.click.aliexpress.com/e/_olKBkmz)
-- [microB version](https://s.click.aliexpress.com/e/_oCWhgmN)
-
-*ESP32-2432S032C (3.2" Capacitive)*
-- [Only the capacitive version is supported! USB-C](https://s.click.aliexpress.com/e/_okbSGmd)
-- [IPS version (not that great of a screen), Only the capacitive version is supported! USB-C](https://s.click.aliexpress.com/e/_oFygVwt)
-
-*ESP32-3248S035C (3.5" Capacitive)*
-- [microB version](https://s.click.aliexpress.com/e/_oCqygE9)
-
-### Screenshots
-(Quite literally shots of the screen. I'm sorry)
-
--|- 
-:-:|:-:
-![1](readme/1.jpg)|![2](readme/2.jpg)
-![3](readme/3.jpg)|![4](readme/4.jpg)
-![5](readme/5.jpg)|![6](readme/6.jpg)
-![7](readme/7.jpg)|![8](readme/8.jpg)
-![9](readme/9.jpg)|![10](readme/10.jpg)
-
-
-### Credits
-- [xtouch](https://github.com/xperiments-in/xtouch)
-- [ESP32-Cheap-Yellow-Display](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display)
-- [OperatorB](https://github.com/OperatorB) for the ESP32-3248S035C display driver
-- [esp32-smartdisplay](https://github.com/rzeldent/esp32-smartdisplay)
+MIT License.
