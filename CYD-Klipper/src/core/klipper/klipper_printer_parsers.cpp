@@ -228,11 +228,68 @@ void KlipperPrinter::parse_state_min(JsonDocument &in, PrinterDataMinimal* data)
     }
 }
 
+static bool is_user_macro(const char* name, const char* desc)
+{
+    if (name == nullptr || name[0] == '\0')
+    {
+        return false;
+    }
+
+    // Explicit tag always accepts the macro
+    if (desc != nullptr && strcmp(desc, "CYD_SCREEN_MACRO") == 0)
+    {
+        return true;
+    }
+
+    // Internal helper macros start with '_'
+    if (name[0] == '_')
+    {
+        return false;
+    }
+
+    // Standard Klipper system commands / built-ins to filter out
+    static const char* const klipper_builtins[] = {
+        "RESTART", "FIRMWARE_RESTART", "STATUS", "HELP", "SAVE_CONFIG",
+        "SET_GCODE_OFFSET", "SAVE_GCODE_STATE", "RESTORE_GCODE_STATE",
+        "GET_POSITION", "SET_PRINT_STATS_INFO", "SDCARD_RESET_FILE",
+        "SDCARD_PRINT_FILE", "PAUSE", "RESUME", "CLEAR_PAUSE", "CANCEL_PRINT",
+        "SET_DISPLAY_TEXT", "RESPOND", "SET_GCODE_VARIABLE",
+        "SET_PAUSE_NEXT_LAYER", "SET_PAUSE_AT_LAYER", "QUERY_PROBE",
+        "PROBE", "PROBE_CALIBRATE", "PROBE_ACCURACY", "Z_OFFSET_APPLY_PROBE",
+        "BED_MESH_CALIBRATE", "BED_MESH_PROFILE", "BED_MESH_OUTPUT",
+        "BED_MESH_MAP", "BED_MESH_CLEAR", "BED_MESH_OFFSET", "TURN_OFF_HEATERS",
+        "QUERY_ADC", "PID_CALIBRATE", "SET_HEATER_TEMPERATURE", "TEMPERATURE_WAIT",
+        "SET_LED", "SET_LED_TEMPLATE", "QUERY_FILAMENT_SENSOR", "SET_FILAMENT_SENSOR",
+        "SCREWS_TILT_CALCULATE", "BED_SCREWS_ADJUST", "QUERY_ENDSTOPS",
+        "SET_STEPPER_ENABLE", "STEPPER_BUZZ", "SET_VELOCITY_LIMIT",
+        "SET_PRESSURE_ADVANCE", "SET_EXTRUDER_ROTATION_DISTANCE",
+        "SYNC_EXTRUDER_MOTION", "ACTIVATE_EXTRUDER", "SET_IDLE_TIMEOUT",
+        "MANUAL_PROBE", "TUNING_TOWER", "CANCEL_PRINT_BASE", "PAUSE_BASE",
+        "RESUME_BASE", "SET_PRINT_STATS_INFO_BASE"
+    };
+
+    if (strncmp(name, "EXCLUDE_OBJECT", 14) == 0)
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < sizeof(klipper_builtins) / sizeof(klipper_builtins[0]); ++i)
+    {
+        if (strcmp(name, klipper_builtins[i]) == 0)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 Macros KlipperPrinter::parse_macros(JsonDocument &in)
 {
     JsonObject result = in["result"];
     Macros macros = {0};
-    macros.macros = (char **)malloc(sizeof(char *) * 32);
+    int count = parse_macros_count(in);
+    macros.macros = (char **)malloc(sizeof(char *) * (count > 0 ? count : 1));
     macros.count = 0;
     macros.success = true;
 
@@ -240,7 +297,7 @@ Macros KlipperPrinter::parse_macros(JsonDocument &in)
     {
         const char *key = i.key().c_str();
         const char *value = i.value().as<String>().c_str();
-        if (strcmp(value, "CYD_SCREEN_MACRO") == 0)
+        if (is_user_macro(key, value))
         {
             char *macro = (char *)malloc(strlen(key) + 1);
             strcpy(macro, key);
@@ -259,8 +316,9 @@ int KlipperPrinter::parse_macros_count(JsonDocument &in)
 
     for (JsonPair i : result)
     {
+        const char *key = i.key().c_str();
         const char *value = i.value().as<String>().c_str();
-        if (strcmp(value, "CYD_SCREEN_MACRO") == 0)
+        if (is_user_macro(key, value))
         {
             count++;
         }
