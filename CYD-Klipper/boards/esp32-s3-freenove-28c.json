@@ -1,0 +1,73 @@
+{
+  "build": {
+    "arduino": {
+      "ldscript": "esp32s3_out.ld",
+      "memory_type": "qio_opi",
+      "partitions": "default_16MB.csv"
+    },
+    "core": "esp32",
+    "extra_flags": [
+      "-DUSER_SETUP_LOADED=1",
+      "-DILI9341_2_DRIVER=1",
+      "-DTFT_RGB_ORDER=TFT_BGR",
+      "-DTFT_INVERSION_ON=1",
+      "-DTFT_WIDTH=240",
+      "-DTFT_HEIGHT=320",
+      "-DTFT_BL=45",
+      "-DTFT_BACKLIGHT_ON=HIGH",
+      "-DTFT_MISO=13",
+      "-DTFT_MOSI=11",
+      "-DTFT_SCLK=12",
+      "-DTFT_CS=10",
+      "-DTFT_DC=46",
+      "-DTFT_RST=-1",
+      "-DSPI_FREQUENCY=40000000",
+      "-DUSE_HSPI_PORT=1",
+      "-DLOAD_GLCD=1",
+      "-DLOAD_FONT2=1",
+      "-DLOAD_FONT4=1",
+      "-DLOAD_FONT6=1",
+      "-DLOAD_FONT7=1",
+      "-DLOAD_FONT8=1",
+      "-DLOAD_GFXFF=1",
+      "-DSMOOTH_FONT=1",
+      "-DCYD_SCREEN_HEIGHT_PX=240",
+      "-DCYD_SCREEN_WIDTH_PX=320",
+      "-DCYD_SCREEN_GAP_PX=8",
+      "-DCYD_SCREEN_MIN_BUTTON_HEIGHT_PX=35",
+      "-DCYD_SCREEN_MIN_BUTTON_WIDTH_PX=35",
+      "-DCYD_SCREEN_FONT=lv_font_montserrat_14",
+      "-DCYD_SCREEN_FONT_SMALL=lv_font_montserrat_10",
+      "-DCYD_SCREEN_SIDEBAR_SIZE_PX=40",
+      "-DCYD_SCREEN_DRIVER_FREENOVE_ESP32S3_28=1",
+      "-DCYD_SCREEN_DISABLE_TOUCH_CALIBRATION",
+      "-DARDUINO_USB_CDC_ON_BOOT=1",
+      "-DCYD_S3",
+      "-DBOARD_HAS_PSRAM"
+    ],
+    "f_cpu": "240000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "mcu": "esp32s3",
+    "variant": "esp32s3"
+  },
+  "connectivity": [
+    "wifi",
+    "bluetooth"
+  ],
+  "frameworks": [
+    "arduino",
+    "espidf"
+  ],
+  "name": "freenove-esp32s3-display-28",
+  "upload": {
+    "flash_size": "16MB",
+    "maximum_ram_size": 327680,
+    "maximum_size": 16777216,
+    "require_upload_port": true,
+    "speed": 921600
+  },
+  "url": "https://github.com/Freenove/Freenove_ESP32_S3_Display",
+  "vendor": "Freenove"
+}
+
